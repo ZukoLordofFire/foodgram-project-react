@@ -16,7 +16,6 @@ class User(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150, unique=False)
     second_name = models.CharField(max_length=150, unique=False)
-    bio = models.TextField(max_length=500, blank=True, null=True)
     role = models.CharField(
         max_length=10,
         help_text='роль пользователя в системе',
