@@ -7,7 +7,7 @@ from .models import Recipe, User, Follow, Favourite, Cart
 
 
 def index(request):
-    template = 'recipes/index.html'
+    template = 'recipes/index.js'
     title = 'Последние обновления на сайте'
     recipe_list = Recipe.objects.all().select_related('author',)
     paginator = Paginator(recipe_list, Recipe.SIX_ACTS)
@@ -91,7 +91,6 @@ def recipe_edit(request, recipe_id):
     return render(request, template, context)
 
 
-
 @login_required
 def recipe_delete(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -100,9 +99,9 @@ def recipe_delete(request, recipe_id):
         return redirect('recipes:recipe_detail', recipe_id)
     else:
         Recipe.objects.filter(recipe=recipe, author=author).delete()
-    
+
     return redirect('recipe:index')
-    
+
 
 @login_required
 def follow_index(request):
@@ -120,9 +119,9 @@ def follow_index(request):
 
 
 @login_required
-def favouries(request):
+def favourites(request):
     title = 'Избранные рецепты'
-    recipes = Recipe.objects.filter(recipe_favourite_user=request.user)
+    recipes = Favourite.objects.filter(recipe_favourite_user=request.user)
     template = 'recipes/favourites.html'
     paginator = Paginator(recipes, Recipe.SIX_ACTS)
     page_number = request.GET.page('page')
@@ -211,3 +210,18 @@ def delete_cart(request, recipe_id):
 def download_cart(request):
     template = 'recipes:cart'
     return redirect(template)
+
+
+@login_required
+def your_cart(request, username):
+    title = 'Ваша корзина'
+    recipes = Cart.objects.filter(recipe_cart_user=request.user)
+    template = 'recipes/cart.html'
+    paginator = Paginator(recipes, Recipe.SIX_ACTS)
+    page_number = request.GET.page('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'title': title,
+        'page_obj': page_obj
+    }
+    return render(request, template, context)

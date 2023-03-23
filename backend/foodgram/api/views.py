@@ -5,14 +5,14 @@ from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
 
-from reviews.models import Category, Genre, Title, Review, Comment
+from recipes.models import Recipe, Recipe_Tag, Cart, Favourite
 from .filters import TitleFilter
 from .permissions import (AuthorOnly, CombinedPermission,
-                          ReadOnly, AdminOnly, ModeratorOnly)
-from .serializers import (CategorySerializer,
+                          ReadOnly, AdminOnly)
+from .serializers import (Recipe_TagSerializer,
                           GenreSerializer,
                           TitleReadSerializer, TitleWriteSerializer,
-                          ReviewSerializer,
+                          RecipeSerializer,
                           CommentSerializer)
 
 
@@ -58,8 +58,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
     permission_classes = (CombinedPermission,)
     pagination_class = LimitOffsetPagination
 

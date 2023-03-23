@@ -2,12 +2,12 @@ import datetime as dt
 
 from rest_framework import serializers
 
-from recipes.models import Recipe, Cart, Favourite
+from recipes.models import Recipe, Cart, Favourite, Recipe_Tag
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class Recipe_TagSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = Recipe_Tag
         exclude = ('id',)
         lookup_field = 'slug'
         extra_kwargs = {
@@ -58,18 +58,18 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         return value
 
 
-class ReviewSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
 
     class Meta:
-        model = Review
+        model = Recipe
         exclude = ('title',)
 
     def validate(self, attrs):
         if self.context['request'].method == 'POST':
-            if self.context['request'].user.reviews.filter(
+            if self.context['request'].user.recipe.filter(
                 title=self.context.get(
                     'view').kwargs.get('title_id')).exists():
                 raise serializers.ValidationError(

@@ -35,8 +35,6 @@ UNITS_CHOICES = (
     ("26", "кружка"),
 )
 
-TAG_CHOICES = ()
-
 INGRIDIENTS_CHOICES = ()
 
 

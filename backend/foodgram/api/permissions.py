@@ -18,13 +18,6 @@ class AdminOnly(permissions.IsAuthenticatedOrReadOnly):
         )
 
 
-class ModeratorOnly(permissions.IsAuthenticatedOrReadOnly):
-    def has_permission(self, request, view):
-        return (request.method in SAFE_METHODS
-                or (request.user.is_authenticated
-                    and request.user.role == UserRole.MODERATOR))
-
-
 class AuthorOnly(permissions.IsAuthenticatedOrReadOnly):
 
     def has_object_permission(self, request, view, obj):
@@ -32,4 +25,4 @@ class AuthorOnly(permissions.IsAuthenticatedOrReadOnly):
             return True
 
 
-CombinedPermission = (AuthorOnly or ModeratorOnly or AdminOnly or ReadOnly)
+CombinedPermission = (AuthorOnly or AdminOnly or ReadOnly)
