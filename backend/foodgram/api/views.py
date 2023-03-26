@@ -1,19 +1,25 @@
-from django.db.models import Avg
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, viewsets
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
 
-from recipes.models import Recipe, Recipe_Tag, Cart, Favourite
-from .filters import TitleFilter
-from .permissions import (AuthorOnly, CombinedPermission,
-                          ReadOnly, AdminOnly)
-from .serializers import (Recipe_TagSerializer,
-                          GenreSerializer,
-                          TitleReadSerializer, TitleWriteSerializer,
-                          RecipeSerializer,
-                          CommentSerializer)
+from recipes.models import Recipe, Recipe_Tag, Cart, Favourite, IngredientAmount, Ingredients
+from api.filters import IngredientSearchFilter, AuthorAndTagFilter
+from api.permissions import (AuthorOnly, CombinedPermission,
+                             ReadOnly, AdminOnly)
+from api.serializers import (TagSerializer,
+                             IngredientAmountSerializer,
+                             IngredientSerializer, CropRecipeSerializer,
+                             RecipeSerializer,
+                             FollowSerializer)
 
 
 class CLDMixinSet(mixins.CreateModelMixin,
@@ -23,65 +29,98 @@ class CLDMixinSet(mixins.CreateModelMixin,
     pass
 
 
-class CategoryViewSet(CLDMixinSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    pagination_class = LimitOffsetPagination
-    permission_classes = (AdminOnly | ReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+class TagsViewSet(ReadOnlyModelViewSet):
+    permission_classes = (AdminOnly,)
+    queryset = Recipe_Tag.objects.all()
+    serializer_class = TagSerializer
 
 
-class GenreViewSet(CLDMixinSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    pagination_class = LimitOffsetPagination
-    permission_classes = (AdminOnly | ReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+class IngredientsViewSet(ReadOnlyModelViewSet):
+    permission_classes = (AdminOnly,)
+    queryset = Ingredients.objects.all()
+    serializer_class = IngredientSerializer
+    filter_backends = (IngredientSearchFilter,)
+    search_fields = ('^name',)
 
 
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(
-        rating=Avg('reviews__score')).order_by('name')
-    pagination_class = PageNumberPagination
-    permission_classes = (AdminOnly | ReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = TitleFilter
-
-    def get_serializer_class(self):
-        if self.request.method in ['POST', 'PATCH']:
-            return TitleWriteSerializer
-        return TitleReadSerializer
-
-
-class ReviewViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = (CombinedPermission,)
-    pagination_class = LimitOffsetPagination
-
-    def get_queryset(self):
-        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
-        return title.reviews.all()
+    pagination_class = LimitPageNumberPagination
+    filter_class = AuthorAndTagFilter
+    permission_classes = [AuthorOnly]
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
-        serializer.save(title=title, author=self.request.user)
+        serializer.save(author=self.request.user)
 
+    @action(detail=True, methods=['get', 'delete'],
+            permission_classes=[CombinedPermission])
+    def favourite(self, request, pk=None):
+        if request.method == 'GET':
+            return self.add_obj(Favourite, request.user, pk)
+        elif request.method == 'DELETE':
+            return self.delete_obj(Favourite, request.user, pk)
+        return None
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (AuthorOnly | ReadOnly,)
-    pagination_class = LimitOffsetPagination
+    @action(detail=True, methods=['get', 'delete'],
+            permission_classes=[CombinedPermission])
+    def shopping_cart(self, request, pk=None):
+        if request.method == 'GET':
+            return self.add_obj(Cart, request.user, pk)
+        elif request.method == 'DELETE':
+            return self.delete_obj(Cart, request.user, pk)
+        return None
 
-    def get_queryset(self):
-        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
-        return title.reviews.get(pk=self.kwargs['review_id']).comments.all()
+    @action(detail=False, methods=['get'],
+            permission_classes=[CombinedPermission])
+    def download_shopping_cart(self, request):
+        final_list = {}
+        ingredients = IngredientAmount.objects.filter(
+            recipe__cart__user=request.user).values_list(
+            'ingredient__name', 'ingredient__measurement_unit',
+            'amount')
+        for item in ingredients:
+            name = item[0]
+            if name not in final_list:
+                final_list[name] = {
+                    'measurement_unit': item[1],
+                    'amount': item[2]
+                }
+            else:
+                final_list[name]['amount'] += item[2]
+        pdfmetrics.registerFont(
+            TTFont('Slimamif', 'Slimamif.ttf', 'UTF-8'))
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = ('attachment; '
+                                           'filename="shopping_list.pdf"')
+        page = canvas.Canvas(response)
+        page.setFont('Slimamif', size=24)
+        page.drawString(200, 800, 'Список ингредиентов')
+        page.setFont('Slimamif', size=16)
+        height = 750
+        for i, (name, data) in enumerate(final_list.items(), 1):
+            page.drawString(75, height, (f'<{i}> {name} - {data["amount"]}, '
+                                         f'{data["measurement_unit"]}'))
+            height -= 25
+        page.showPage()
+        page.save()
+        return response
 
-    def perform_create(self, serializer):
-        review = get_object_or_404(Review, pk=self.kwargs['review_id'])
-        serializer.save(review=review, author=self.request.user)
+    def add_obj(self, model, user, pk):
+        if model.objects.filter(user=user, recipe__id=pk).exists():
+            return Response({
+                'errors': 'Рецепт уже добавлен в список'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        recipe = get_object_or_404(Recipe, id=pk)
+        model.objects.create(user=user, recipe=recipe)
+        serializer = CropRecipeSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete_obj(self, model, user, pk):
+        obj = model.objects.filter(user=user, recipe__id=pk)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({
+            'errors': 'Рецепт уже удален'
+        }, status=status.HTTP_400_BAD_REQUEST)

@@ -16,7 +16,7 @@ app_name = 'authentication'
 
 urlpatterns = [
     path('auth/token/', TokenView.as_view(), name='get_token'),
-    path('auth/signup/', RegisterView.as_view(), name='create_user'),
+    path('signup/', RegisterView.as_view(), name='create_user'),
     path('logout/',
          LogoutView.as_view(template_name='users/logged_out.html'),
          name='logout'),

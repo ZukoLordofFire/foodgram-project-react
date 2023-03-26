@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from recipes.validators import validate_amount
-
 User = get_user_model()
 
 
@@ -58,9 +56,8 @@ class Recipe_Tag(models.Model):
                                 max_length=10)
 
 
-class Ingridients(models.Model):
+class Ingredients(models.Model):
     name = models.CharField(max_length=150)
-    amount = models.IntegerField
     measurement_unit = models.CharField(choices=UNITS_CHOICES, max_length=150)
 
 
@@ -71,7 +68,8 @@ class Recipe(models.Model):
     text = models.TextField('Текстовое описание',
                             help_text='Введите текст')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    ingridients = models.ManyToManyField(Ingridients)
+    ingredients = models.ManyToManyField(Ingredients,
+                                         through='IngredientAmount',)
     recipe_tag = models.ManyToManyField(Recipe_Tag)
     SIX_ACTS = 6
     author = models.ForeignKey(User,
@@ -83,7 +81,7 @@ class Recipe(models.Model):
         upload_to='recipes/',
         blank=True
     )
-    coocking_duration = models.IntegerField('Время приготовления')
+    cooking_duration = models.PositiveSmallIntegerField('Время приготовления')
 
     class Meta:
         ordering = ('-pub_date',)
@@ -131,10 +129,10 @@ class Cart(models.Model):
 
 
 class IngredientAmount(models.Model):
-    ingredient = models.ForeignKey(Ingridients,
+    ingredient = models.ForeignKey(Ingredients,
                                    on_delete=models.CASCADE,
                                    verbose_name='Ингридиент')
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.CASCADE,
                                verbose_name='Рецепт')
-    amount = models.IntegerField(validators=[validate_amount])
+    amount = models.PositiveSmallIntegerField()
