@@ -1,28 +1,52 @@
-from rest_framework import permissions
-from rest_framework.permissions import SAFE_METHODS
-
-from users.models import UserRole
-
-
-class ReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (request.method in SAFE_METHODS)
+from django.core.handlers.wsgi import WSGIRequest
+from django.db.models import Model
+from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.routers import APIRootView
 
 
-class AdminOnly(permissions.IsAuthenticatedOrReadOnly):
-    def has_permission(self, request, view):
+class AuthorStaffOrReadOnly(BasePermission):
+    def has_object_permission(
+        self,
+        request: WSGIRequest,
+        view: APIRootView,
+        obj: Model
+    ) -> bool:
         return (
             request.method in SAFE_METHODS
-            or (request.user.is_authenticated
-                and request.user.role == UserRole.ADMIN)
+            or request.user.is_authenticated
+            and request.user.is_active
+            and (
+                request.user == obj.author
+                or request.user.is_staff
+            )
         )
 
 
-class AuthorOnly(permissions.IsAuthenticatedOrReadOnly):
+class AdminOrReadOnly(BasePermission):
+    def has_object_permission(
+        self,
+        request: WSGIRequest,
+        view: APIRootView
+    ) -> bool:
+        return (
+            request.method in SAFE_METHODS
+            or request.user.is_authenticated
+            and request.user.is_active
+            and request.user.is_staff
+        )
 
-    def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS or obj.author == request.user:
-            return True
 
-
-CombinedPermission = (AuthorOnly or AdminOnly or ReadOnly)
+class OwnerUserOrReadOnly(BasePermission):
+    def has_object_permission(
+        self,
+        request: WSGIRequest,
+        view: APIRootView,
+        obj: Model
+    ) -> bool:
+        return (
+            request.method in SAFE_METHODS
+            or request.user.is_authenticated
+            and request.user.is_active
+            and request.user == obj.author
+            or request.user.is_staff
+        )

@@ -1,17 +1,17 @@
-from pathlib import Path
-
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DATE_TIME_FORMAT = '%d/%m/%Y %H:%M'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # 'django-insecure-hn3j1ry9$*)t8p^2tt_hy)hedi=v0r4=*h^#=&$!y2sd++@en%'
-SECRET_KEY = os.environ.get('DJ_SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='abc')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -115,6 +115,23 @@ REST_FRAMEWORK = {
 }
 
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'resipe': ('api.permissions.AuthorStaffOrReadOnly,',),
+        'recipe_list': ('api.permissions.AuthorStaffOrReadOnly',),
+        'user': ('api.permissions.OwnerUserOrReadOnly',),
+        'user_list': ('api.permissions.OwnerUserOrReadOnly',),
+    },
+    'SERIALIZERS': {
+        'user': 'api.serializers.UserSerializer',
+        'user_list': 'api.serializers.UserSerializer',
+        'current_user': 'api.serializers.UserSerializer',
+        'user_create': 'api.serializers.UserSerializer',
+    },
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -141,9 +158,27 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+PASSWORD_RESET_TIMEOUT = 60 * 60
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG' if DEBUG else 'ERROR',
+            'handlers': ['console', ],
+        },
+    },
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # в os.getenv(...)
-EMAIL_HOST = 'smtp.tempmail.us.com'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = 'password'
