@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING
 from recipes.models import IngredientAmount, Recipe
 
 if TYPE_CHECKING:
-    from recipes.models import Ingredient
+    from recipes.models import Ingredients
 
 
 def recipe_ingredients_set(
     recipe: Recipe,
-    ingredients: dict[int, tuple['Ingredient', int]]
+    ingredients: dict[int, tuple['Ingredients', int]]
 ) -> None:
     objs = []
 
