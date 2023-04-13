@@ -1,25 +1,16 @@
-from django.contrib.admin import register
-from django.contrib.auth.admin import UserAdmin
+from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from users.models import User
 
 
-@register(User)
-class UserAdmin(UserAdmin):
-    list_display = (
-        'is_active', 'username', 'first_name', 'last_name', 'email',
-    )
-    fields = (
-        ('is_active', ),
-        ('username', 'email', ),
-        ('first_name', 'last_name', ),
-    )
-    fieldsets = []
+class UserResource(resources.ModelResource):
+    class Meta:
+        model = User
 
-    search_fields = (
-        'username', 'email',
-    )
-    list_filter = (
-        'is_active', 'first_name', 'email',
-    )
-    save_on_top = True
+
+@admin.register(User)
+class RecipeAdmin(ImportExportModelAdmin):
+    resource_classes = [UserResource]
+    list_display = ('id', 'username', 'bio', 'role')
