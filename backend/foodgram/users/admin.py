@@ -12,7 +12,8 @@ class UserResource(resources.ModelResource):
         fields = (
             'username',
             'email',
-            'bio',
+            'first_name',
+            'second_name',
             'password',
         )
 
@@ -109,7 +110,7 @@ class RecipeAdmin(ImportExportModelAdmin):
         'text',
         'cooking_time',
     )
-    list_filter = ('title', 'author', 'tags')
+    list_filter = ('name', 'author', 'tags')
 
     def get_favourite_count(self, obj):
         return Favourite.objects.filter(recipe=obj).count()
@@ -142,7 +143,8 @@ class UserAdmin(ImportExportModelAdmin):
     list_display = (
         'username',
         'email',
-        'bio',
+        'first_name',
+        'second_name',
         'password',
     )
     list_filter = ('username', 'email')

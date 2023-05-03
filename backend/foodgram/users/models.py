@@ -11,7 +11,7 @@ class User(AbstractUser):
     second_name = models.CharField(max_length=150)
     password = models.CharField(max_length=64)
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ('email',)
+    REQUIRED_FIELDS = ('email', 'first_name', 'second_name', 'password',)
 
 
 class Follow(models.Model):

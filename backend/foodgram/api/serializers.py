@@ -160,7 +160,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
                   'email',
                   'username',
                   'first_name',
-                  'last_name',
+                  'second_name',
                   'password')
 
     def create(self, data):
@@ -183,7 +183,8 @@ class FollowSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'is_following',
-            'bio',
+            'first_name',
+            'second_name',
             'recipes',
             'recipes_count',
         )
@@ -193,5 +194,4 @@ class FollowSerializer(serializers.ModelSerializer):
         return True
 
     def get_recipes_count(self, user):
-
         return user.recipes.count()
