@@ -75,9 +75,9 @@ class RecipesViewSet(ModelViewSet):
                                         recipe=recipe).exists():
                 return Response(
                     {'message': 'Рецепт уже добавлен в избранное.'},
-                    status=400)
+                    status=status.HTTP_400_BAD_REQUEST)
             Favourite.objects.create(user=self.request.user, recipe=recipe)
-            return Response({'message': 'Рецепт успешно добавлен в избрааное.'}
+            return Response({'message': 'Рецепт успешно добавлен в избранное.'}
                             )
         else:
             if Favourite.objects.filter(user=self.request.user,
@@ -85,7 +85,7 @@ class RecipesViewSet(ModelViewSet):
                 Favourite.objects.delete(user=self.request.user, recipe=recipe)
             else:
                 return Response({'message': 'Рецепта нет в избранном.'},
-                                status=400)
+                                status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -98,11 +98,12 @@ class RecipesViewSet(ModelViewSet):
             if Cart.objects.filter(user=self.request.user,
                                    recipe=recipe).exists():
                 return Response({'message': 'Рецепт уже добавлен в корзину.'},
-                                status=400)
+                                status=status.HTTP_400_BAD_REQUEST)
             Cart.objects.create(user=self.request.user, recipe=recipe)
         if Cart.objects.filter(user=self.request.user, recipe=recipe).exists():
             Cart.objects.delete(user=self.request.user, recipe=recipe)
-        return Response({'message': 'Рецепта нет в корзине.'}, status=400)
+        return Response({'message': 'Рецепта нет в корзине.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     @action(
             methods=['GET'],
