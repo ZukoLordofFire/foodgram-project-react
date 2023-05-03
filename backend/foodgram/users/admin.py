@@ -122,8 +122,9 @@ class IngredientResource(resources.ModelResource):
     class Meta:
         model = Ingredient
         fields = (
-            'measurement_unit',
+            'id',
             'name',
+            'measurement_unit',
         )
 
 
@@ -131,8 +132,9 @@ class IngredientResource(resources.ModelResource):
 class IngredientsAdmin(ImportExportModelAdmin):
     resource_classes = [IngredientResource]
     list_display = (
-        'measurement_unit',
+        'id',
         'name',
+        'measurement_unit',
     )
     list_filter = ('name',)
 
