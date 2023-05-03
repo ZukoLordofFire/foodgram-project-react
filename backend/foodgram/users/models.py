@@ -1,26 +1,29 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 from users.validators import validate_username
-
-
-class UserRole(models.TextChoices):
-    """Роли пользователей."""
-    USER = 'user'
-    MODERATOR = 'moderator'
-    ADMIN = 'admin'
 
 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True,
                                 validators=[validate_username])
     email = models.EmailField(max_length=254, unique=True)
-    bio = models.TextField(max_length=500, blank=True, null=True)
-    role = models.CharField(
-        max_length=10,
-        help_text='роль пользователя в системе',
-        choices=UserRole.choices,
-        default=UserRole.USER
-    )
+    first_name = models.CharField(max_length=150)
+    second_name = models.CharField(max_length=150)
+    password = models.CharField(max_length=64)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ('email',)
+
+
+class Follow(models.Model):
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        related_name='followed',
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name='Фолловер',
+        related_name='follower',
+        on_delete=models.CASCADE,
+    )

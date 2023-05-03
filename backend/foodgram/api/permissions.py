@@ -1,7 +1,5 @@
 from rest_framework import permissions
-from rest_framework.permissions import SAFE_METHODS
-
-from users.models import UserRole
+from rest_framework.permissions import SAFE_METHODS, DjangoModelPermissions
 
 
 class ReadOnly(permissions.BasePermission):
@@ -14,15 +12,8 @@ class AdminOnly(permissions.IsAuthenticatedOrReadOnly):
         return (
             request.method in SAFE_METHODS
             or (request.user.is_authenticated
-                and request.user.role == UserRole.ADMIN)
+                and request.user.is_staff)
         )
-
-
-class ModeratorOnly(permissions.IsAuthenticatedOrReadOnly):
-    def has_permission(self, request, view):
-        return (request.method in SAFE_METHODS
-                or (request.user.is_authenticated
-                    and request.user.role == UserRole.MODERATOR))
 
 
 class AuthorOnly(permissions.IsAuthenticatedOrReadOnly):
@@ -32,4 +23,4 @@ class AuthorOnly(permissions.IsAuthenticatedOrReadOnly):
             return True
 
 
-CombinedPermission = (AuthorOnly or ModeratorOnly or AdminOnly or ReadOnly)
+CombinedPermission = (AuthorOnly or AdminOnly or ReadOnly)

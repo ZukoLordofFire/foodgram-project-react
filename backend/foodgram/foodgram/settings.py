@@ -104,31 +104,33 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.TokenAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
+    'USER_CREATE_PASSWORD_RETYPE': True,
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'resipe': ('api.permissions.AuthorStaffOrReadOnly,',),
         'recipe_list': ('api.permissions.AuthorStaffOrReadOnly',),
-        'user': ('api.permissions.OwnerUserOrReadOnly',),
-        'user_list': ('api.permissions.OwnerUserOrReadOnly',),
+        'user': ('api.permissions.CombinedPermission',),
+        'user_list': ('api.permissions.CombinedPermission',),
     },
     'SERIALIZERS': {
         'user': 'api.serializers.UserSerializer',
         'user_list': 'api.serializers.UserSerializer',
         'current_user': 'api.serializers.UserSerializer',
-        'user_create': 'api.serializers.UserSerializer',
+        'user_create': 'api.serializers.UserCreateSerializer',
     },
 }
 
