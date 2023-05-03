@@ -57,7 +57,6 @@ class RecipesViewSet(ModelViewSet):
     def get_queryset(self):
         recipes = Recipe.objects.all()
 
-        # Фильтры из GET-параметров запроса, например.
         author = self.request.query_params.get('author', None)
         if author:
             recipes = recipes.filter(author=author)

@@ -40,7 +40,6 @@ class IngredientsinRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    """Получение списка рецептов."""
 
     ingredients = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField(
@@ -52,7 +51,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     def get_ingredients(self, obj):
-        """Возвращает отдельный сериализатор."""
         return IngredientsinRecipeSerializer(
             IngredientAmount.objects.filter(recipe=obj).all(), many=True
         ).data
