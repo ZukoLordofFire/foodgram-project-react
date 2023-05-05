@@ -7,14 +7,16 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
+
   db:
     image: postgres:13.0-alpine
     volumes:
       - /var/lib/postgresql/data/
     env_file:
       - ./.env
+
   backend:
-    image: zukosithlord/yamdb_final:latest
+    image: zukosithlord/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
