@@ -79,7 +79,9 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
+          cd backend/
           sudo docker pull zukosithlord/foodgram_backend
+          cd ../frontend
           sudo docker pull zukosithlord/foodgram_frontend
           sudo docker-compose stop
           sudo docker rm zukosithlord/foodgram_front
