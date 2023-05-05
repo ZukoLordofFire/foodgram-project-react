@@ -42,7 +42,7 @@ jobs:
         with:
           context: backend/
           push: true
-          tags: zukosithlord/foodgram_backend:v1
+          tags: zukosithlord/foodgram_backend:latest
 
   build_and_push_front_to_docker_hub:
     name: Push frontend Docker image to Docker Hub
@@ -63,7 +63,7 @@ jobs:
         with:
           context: frontend/
           push: true
-          tags: zukosithlord/foodgram_frontend:v1
+          tags: zukosithlord/foodgram_frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
