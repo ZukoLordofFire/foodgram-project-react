@@ -59,14 +59,14 @@ class RecipesViewSet(ModelViewSet):
 
         author = self.request.query_params.get('author', None)
         if author:
-            recipes = recipes.filter(author=author)
+            return recipes.filter(author=author)
 
         return recipes
 
     @action(
-            methods=['POST', 'DELETE'],
-            detail=True,
-            permission_classes=(IsAuthenticated,)
+        methods=['POST', 'DELETE'],
+        detail=True,
+        permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
@@ -79,13 +79,11 @@ class RecipesViewSet(ModelViewSet):
             Favourite.objects.create(user=self.request.user, recipe=recipe)
             return Response({'message': 'Рецепт успешно добавлен в избранное.'}
                             )
-        else:
-            if Favourite.objects.filter(user=self.request.user,
-                                        recipe=recipe).exists():
-                Favourite.objects.delete(user=self.request.user, recipe=recipe)
-            else:
-                return Response({'message': 'Рецепта нет в избранном.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+        if Favourite.objects.filter(user=self.request.user,
+                                    recipe=recipe).exists():
+            Favourite.objects.delete(user=self.request.user, recipe=recipe)
+        return Response({'message': 'Рецепта нет в избранном.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -106,9 +104,9 @@ class RecipesViewSet(ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     @action(
-            methods=['GET'],
-            detail=False,
-            permission_classes=(IsAuthenticated,)
+        methods=['GET'],
+        detail=False,
+        permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
         user = self.request.user
@@ -117,7 +115,7 @@ class RecipesViewSet(ModelViewSet):
         ingredients = IngredientAmount.objects.filter(
             recipe__in_carts__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit'
-            ).annotate(
+        ).annotate(
             ingredient_amount=Sum('amount'))
 
         buffer = BytesIO()
@@ -126,11 +124,12 @@ class RecipesViewSet(ModelViewSet):
         height = 700
         width = 100
         for i, item in enumerate(ingredients, 1):
-            recipe = get_object_or_404(
+            get_object_or_404(
                 Recipe,
                 ingredientamount__ingredient__name=item['ingredient__name'])
             pdf_list.drawString(width, height, (
-                f'{i}. {item["ingredient__name"]} - {item["ingredient_amount"]}, '
+                f'{i}. {item["ingredient__name"]} - '
+                f'{item["ingredient_amount"]}, '
                 f'{item["ingredient__measurement_unit"]}. '))
             height -= 25
         pdf_list.showPage()
@@ -149,8 +148,8 @@ class UserViewSet(POSTandGETViewSet):
     serializer_class = FollowSerializer
 
     @action(
-            methods=['GET'],
-            detail=False,
+        methods=['GET'],
+        detail=False,
     )
     def subscriptions(self, request):
         if self.request.user.is_anonymous:

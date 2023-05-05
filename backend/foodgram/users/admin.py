@@ -45,9 +45,9 @@ class IngredientAmountResource(resources.ModelResource):
 class IngredientAmountAdmin(ImportExportModelAdmin):
     resource_classes = [IngredientAmountResource]
     list_display = (
-            'recipe',
-            'ingredient',
-            'amount',
+        'recipe',
+        'ingredient',
+        'amount',
     )
 
 
@@ -66,9 +66,9 @@ class CartResource(resources.ModelResource):
 class CartAdmin(ImportExportModelAdmin):
     resource_classes = [CartResource]
     list_display = (
-            'recipe',
-            'user',
-            'date_added',
+        'recipe',
+        'user',
+        'date_added',
     )
 
 
@@ -167,6 +167,6 @@ class FollowResource(resources.ModelResource):
 class FollowAdmin(ImportExportModelAdmin):
     resource_classes = [FollowResource]
     list_display = (
-            'author',
-            'user',
+        'author',
+        'user',
     )
