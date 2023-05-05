@@ -3,7 +3,7 @@ services:
 
   frontend:
     image: zukosithlord/foodgram_frontend:latest
-    restars: always
+    restart: always
     volumes:
       - ../frontend/:/app/result_build/
     container_name: foodgram_frontend
