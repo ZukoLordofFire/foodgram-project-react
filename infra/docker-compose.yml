@@ -17,7 +17,7 @@ services:
       - ./.env
 
   backend:
-    image: zukosithlord/foodgram_backend:latest
+    image: zukosithlord/foodgram_backend:v1
     restart: always
     volumes:
       - static_value:/app/static/
