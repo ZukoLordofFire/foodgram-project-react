@@ -78,7 +78,6 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
-        stack_file_name: docker-compose.yaml
         script: |
           sudo docker pull zukosithlord/foodgram_backend
           sudo docker pull zukosithlord/foodgram_frontend
