@@ -197,7 +197,6 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# добавлю на втором этапе в os.getenv(...)
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
