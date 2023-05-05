@@ -82,7 +82,8 @@ jobs:
           sudo docker pull zukosithlord/foodgram_backend
           sudo docker pull zukosithlord/foodgram_frontend
           sudo docker-compose stop
-          sudo docker-compose rm web
+          sudo docker rm zukosithlord/foodgram_front
+          sudo docker rm zukosithlord/foodgram_back
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} > .env
           echo DEBUG=${{ secrets.DEBUG }} >> .env
