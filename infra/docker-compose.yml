@@ -2,22 +2,28 @@ version: '3.3'
 services:
 
   frontend:
+    container_name: foodgram_frontend
     image: zukosithlord/foodgram_frontend:latest
     restart: always
     volumes:
       - ../frontend/:/app/result_build/
-    container_name: foodgram_frontend
 
   db:
     image: postgres:13.0-alpine
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
 
   backend:
+    container_name: foodgram_backend
     image: zukosithlord/foodgram_backend:latest
     restart: always
+    command: >
+      bash -c "python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn --bind 0:8000 foodgram.wsgi"
     volumes:
       - static_dir:/app/static/
       - media_dir:/app/media/
@@ -25,7 +31,6 @@ services:
       - db
     env_file:
       - ./.env
-    container_name: foodgram_backend
 
   nginx:
     image: nginx:1.21.3-alpine
