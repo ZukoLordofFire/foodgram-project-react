@@ -19,8 +19,8 @@ services:
     image: zukosithlord/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - static_dir:/app/static/
+      - media_dir:/app/media/
     depends_on:
       - db
     env_file:
