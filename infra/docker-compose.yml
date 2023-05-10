@@ -6,7 +6,7 @@ services:
     image: zukosithlord/foodgram_frontend:latest
     restart: always
     volumes:
-      - ../frontend/:/app/result_build/
+      - ./frontend/:/app/result_build/
 
   db:
     image: postgres:13.0-alpine
