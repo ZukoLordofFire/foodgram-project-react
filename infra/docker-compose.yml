@@ -40,9 +40,9 @@ services:
 
       - ./docs/:/usr/share/nginx/html/api/docs/
 
-      - static_value:/var/html/static/
+      - static_dir:/var/html/static/
 
-      - media_value:/var/html/media/
+      - media_dir:/var/html/media/
 
     depends_on:
       - frontend
