@@ -21,7 +21,7 @@ services:
     image: zukosithlord/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/app/static/
+      - static_value:/app/static:rw
       - media_value:/app/media/
     depends_on:
       - db
@@ -50,6 +50,6 @@ services:
       - backend
 
 volumes:
-  static_value:/app/static/
-  media_value:/app/media/
-  postgres_data:/var/lib/postgresql/data/
+  static_value: 
+  media_value:
+  postgres_data:
