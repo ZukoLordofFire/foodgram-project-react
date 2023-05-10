@@ -20,13 +20,9 @@ services:
     container_name: foodgram_backend
     image: zukosithlord/foodgram_backend:latest
     restart: always
-    command: >
-      bash -c "python manage.py migrate &&
-      python manage.py collectstatic --noinput &&
-      gunicorn --bind 0:8000 foodgram.wsgi"
     volumes:
-      - static_dir:/app/static/
-      - media_dir:/app/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
     depends_on:
       - db
     env_file:
@@ -45,15 +41,15 @@ services:
 
       - ./docs/:/usr/share/nginx/html/api/docs/
 
-      - static_dir:/var/html/static/
+      - static_value:/var/html/static/
 
-      - media_dir:/var/html/media/
+      - media_value:/var/html/media/
 
     depends_on:
       - frontend
       - backend
 
 volumes:
-  static_dir:
-  media_dir:
-  postgres_data:
+  static_value:/app/static/
+  media_value:/app/media/
+  postgres_data:/var/lib/postgresql/data/
