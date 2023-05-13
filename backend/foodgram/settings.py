@@ -143,8 +143,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        'resipe': ('api.permissions.AuthorStaffOrReadOnly,',),
-        'recipe_list': ('api.permissions.AuthorStaffOrReadOnly',),
+        'resipe': ('api.permissions.CombinedPermission,',),
+        'recipe_list': ('api.permissions.CombinedPermission',),
         'user': ('api.permissions.CombinedPermission',),
         'user_list': ('api.permissions.CombinedPermission',),
     },
