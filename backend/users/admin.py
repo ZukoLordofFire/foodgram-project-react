@@ -13,7 +13,7 @@ class UserResource(resources.ModelResource):
             'username',
             'email',
             'first_name',
-            'second_name',
+            'last_name',
             'password',
         )
 
@@ -146,7 +146,7 @@ class UserAdmin(ImportExportModelAdmin):
         'username',
         'email',
         'first_name',
-        'second_name',
+        'last_name',
         'password',
     )
     list_filter = ('username', 'email')

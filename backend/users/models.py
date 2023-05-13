@@ -8,14 +8,14 @@ class User(AbstractUser):
                                 validators=[validate_username])
     email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150)
-    second_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     password = models.CharField(max_length=64)
     is_active = models.BooleanField(
         verbose_name='Активен',
         default=True,
     )
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ('email', 'first_name', 'second_name', 'password',)
+    REQUIRED_FIELDS = ('email', 'first_name', 'last_name', 'password',)
 
 
 class Follow(models.Model):

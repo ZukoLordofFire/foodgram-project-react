@@ -173,7 +173,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
                   'email',
                   'username',
                   'first_name',
-                  'second_name',
+                  'last_name',
                   'password',)
 
     def create(self, data):
@@ -198,7 +198,7 @@ class FollowSerializer(serializers.ModelSerializer):
             'username',
             'is_following',
             'first_name',
-            'second_name',
+            'last_name',
             'recipes',
             'recipes_count',
         )
