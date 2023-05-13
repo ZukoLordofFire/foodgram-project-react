@@ -143,13 +143,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         fields = ('name', 'ingredients', 'text')
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'username', 'first_name', 'last_name')
 
 
-class UserCreateSerializer(serializers.ModelSerializer):
+class CustomUserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
