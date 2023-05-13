@@ -205,7 +205,7 @@ class FollowSerializer(serializers.ModelSerializer):
         read_only_fields = '__all__',
 
     def get_recipes(self, obj):
-        queryset = Recipe.objects.filter(author=obj.author)
+        queryset = Recipe.objects.filter(author=obj)
         return RecipeListSerializer(queryset, many=True).data
 
     def get_is_following(*args):
