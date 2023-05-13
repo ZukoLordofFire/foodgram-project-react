@@ -17,7 +17,7 @@ services:
       python manage.py collectstatic --noinput &&
       gunicorn --bind 0:8000 foodgram.wsgi"
     volumes:
-      - static_backend_value:/app/static/
+      - static_value:/app/static/
       - media_value:/app/media/
     env_file:
       - ./.env
@@ -37,7 +37,7 @@ services:
       - "80:80"
 
     volumes:
-      - static_backend_value:/var/html/static_backend/
+      - static_value:/var/html/static/
 
       - media_value:/var/html/media/
 
@@ -55,5 +55,5 @@ services:
 volumes:
   postgres_data:
   result_build:
-  static_backend_value: 
+  static_value: 
   media_value:
