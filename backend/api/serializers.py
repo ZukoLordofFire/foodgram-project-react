@@ -186,7 +186,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    recipes = RecipeListSerializer(many=True, read_only=True)
+    recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
 
@@ -203,6 +203,14 @@ class FollowSerializer(serializers.ModelSerializer):
             'recipes_count',
         )
         read_only_fields = '__all__',
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        queryset = Recipe.objects.filter(author=obj.author)
+        if limit:
+            queryset = queryset[:int(limit)]
+        return RecipeListSerializer(queryset, many=True).data
 
     def get_is_following(*args):
         return True
