@@ -154,7 +154,7 @@ class UserViewSet(POSTandGETViewSet):
     )
     def me(self, request):
         if request.method == 'GET':
-            serializer = CustomUserSerializer(context={'request': request})
+            serializer = CustomUserSerializer(user=self.request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
