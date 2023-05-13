@@ -146,7 +146,7 @@ DJOSER = {
         'resipe': ('api.permissions.CombinedPermission,',),
         'recipe_list': ('api.permissions.CombinedPermission',),
         'user': ('api.permissions.CombinedPermission',),
-        'user_list': ('api.permissions.CombinedPermission',),
+        'user_list': ('api.permissions.AllowAny',),
     },
     'SERIALIZERS': {
         'user': 'api.serializers.CustomUserSerializer',
