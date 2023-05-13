@@ -11,9 +11,6 @@ services:
   backend:
     container_name: foodgram_backend
     image: zukosithlord/foodgram_backend:latest
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
     restart: always
     command: >
       bash -c "python manage.py migrate &&
@@ -28,9 +25,6 @@ services:
   frontend:
     container_name: foodgram_frontend
     image: zukosithlord/foodgram_frontend:latest
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
