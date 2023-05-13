@@ -212,4 +212,4 @@ class FollowSerializer(serializers.ModelSerializer):
         return True
 
     def get_recipes_count(self, user):
-        return user.recipes.count()
+        return Recipe.objects.filter(author=user).count()
