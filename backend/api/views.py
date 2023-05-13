@@ -167,5 +167,11 @@ class UserViewSet(POSTandGETViewSet):
     )
     def subscribe(self, request, id):
         if request.method == 'POST':
-            return self.add_obj(Follow, request.user, author__id=id)
-        return self.delete_obj(Follow, request.user, author__id=id)
+            if Follow.objects.filter(request.user, author__id=id).exists():
+                return Response({'message': 'Вы уже подписаны на автора.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            Follow.objects.create(request.user, author__id=id)
+        if Follow.objects.filter(request.user, author__id=id).exists():
+            Follow.objects.delete(request.user, author__id=id)
+        return Response({'message': 'Вы не подписаны на этого автора'},
+                        status=status.HTTP_400_BAD_REQUEST)
