@@ -142,7 +142,7 @@ class RecipesViewSet(ModelViewSet):
 
 
 class UserViewSet(POSTandGETViewSet):
-    queryset = User.objects.all
+    queryset = User.objects.all()
     pagination_class = Pagination
     permission_classes = (DjangoModelPermissions,)
     serializer_class = FollowSerializer
