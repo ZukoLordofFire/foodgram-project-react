@@ -34,7 +34,7 @@ services:
     image: nginx:1.21.3-alpine
 
     ports:
-      - "8001:80"
+      - "80:80"
 
     volumes:
       - static_backend_value:/var/html/static_backend/
