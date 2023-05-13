@@ -151,12 +151,11 @@ class UserViewSet(POSTandGETViewSet):
         detail=False,
     )
     def subscriptions(self, request):
+        queryset = Follow.objects.filter(user=self.request.user)
         if self.request.user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        pages = self.paginate_queryset(
-            User.objects.filter(follow__user=self.request.user)
-        )
+        pages = self.paginate_queryset(queryset)
         serializer = FollowSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
 
