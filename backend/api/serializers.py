@@ -146,7 +146,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name')
+        fields = ('id',
+                  'email',
+                  'username',
+                  'first_name',
+                  'last_name',
+                  'is_following')
+        read_only_fields = 'is_following',
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
@@ -159,7 +165,8 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
                   'username',
                   'first_name',
                   'second_name',
-                  'password')
+                  'password',
+                  'is_following')
 
     def create(self, data):
         password = data.pop('password', None)
