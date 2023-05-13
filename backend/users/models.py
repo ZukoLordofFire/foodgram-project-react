@@ -10,6 +10,10 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150)
     second_name = models.CharField(max_length=150)
     password = models.CharField(max_length=64)
+    is_active = models.BooleanField(
+        verbose_name='Активен',
+        default=True,
+    )
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ('email', 'first_name', 'second_name', 'password',)
 
