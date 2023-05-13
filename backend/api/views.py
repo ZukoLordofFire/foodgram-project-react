@@ -14,7 +14,7 @@ from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
 from reportlab.pdfgen import canvas
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from users.models import Follow
@@ -144,12 +144,12 @@ class RecipesViewSet(ModelViewSet):
 class UserViewSet(POSTandGETViewSet):
     queryset = User.objects.all()
     pagination_class = Pagination
-    permission_classes = (DjangoModelPermissions,)
     serializer_class = FollowSerializer
 
     @action(
         methods=['GET'],
         detail=False,
+        permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
         queryset = Follow.objects.filter(user=self.request.user)
