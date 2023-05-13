@@ -2,7 +2,8 @@ from io import BytesIO
 
 from api.paginators import Pagination
 from api.permissions import AdminOnly, CombinedPermission
-from api.serializers import (FollowSerializer, IngredientSerializer,
+from api.serializers import (CustomUserSerializer, FollowSerializer,
+                             IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, TagSerializer)
 from django.contrib.auth import get_user_model
@@ -145,6 +146,17 @@ class UserViewSet(POSTandGETViewSet):
     queryset = User.objects.all()
     pagination_class = Pagination
     serializer_class = FollowSerializer
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def me(self, request):
+        if request.method == 'GET':
+            serializer = CustomUserSerializer(context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(
         methods=['GET'],
