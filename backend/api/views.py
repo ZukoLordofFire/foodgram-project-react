@@ -153,8 +153,9 @@ class UserViewSet(POSTandGETViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def me(self, request):
+        user = User.objects.filter(user=self.request.user)
         if request.method == 'GET':
-            serializer = CustomUserSerializer
+            serializer = CustomUserSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
