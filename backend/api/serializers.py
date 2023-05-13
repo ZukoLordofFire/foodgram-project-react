@@ -158,7 +158,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         read_only_fields = 'is_following',
 
     def get_is_following(self, obj):
-        user = self.context.get('request').user
+        user = self.context.get('request')
         if user.is_anonymous:
             return False
         return Follow.objects.filter(user=user, author=obj.id).exists()
