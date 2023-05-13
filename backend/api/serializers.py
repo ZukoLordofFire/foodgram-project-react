@@ -3,6 +3,7 @@ from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
                             Recipe, Tag)
 from rest_framework import serializers
+from users.models import Follow
 
 User = get_user_model()
 
@@ -144,6 +145,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    is_following = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ('id',
@@ -153,6 +156,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
                   'last_name',
                   'is_following')
         read_only_fields = 'is_following',
+
+    def get_is_following(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
@@ -165,8 +174,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
                   'username',
                   'first_name',
                   'second_name',
-                  'password',
-                  'is_following')
+                  'password',)
 
     def create(self, data):
         password = data.pop('password', None)
@@ -180,6 +188,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     recipes = RecipeListSerializer(many=True, read_only=True)
     recipes_count = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
 
     class Meta:
         model = User
