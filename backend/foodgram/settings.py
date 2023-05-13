@@ -149,10 +149,10 @@ DJOSER = {
         'user_list': ('api.permissions.CombinedPermission',),
     },
     'SERIALIZERS': {
-        'user': 'api.serializers.UserSerializer',
-        'user_list': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
-        'user_create': 'api.serializers.UserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'user_list': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
     },
 }
 
