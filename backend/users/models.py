@@ -14,7 +14,7 @@ class User(AbstractUser):
         verbose_name='Активен',
         default=True,
     )
-    USERNAME_FIELD = 'username'
+    LOGIN_FIELD = 'username'
     REQUIRED_FIELDS = ('email', 'first_name', 'last_name', 'password',)
 
 
