@@ -95,7 +95,7 @@ class IngredientCreateInRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientAmount
-        fields = ('recipe', 'id', 'amount')
+        fields = ('recipe', 'ingredient', 'amount')
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
