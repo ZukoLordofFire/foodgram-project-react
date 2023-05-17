@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
 from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
                             Recipe, Tag)
 from reportlab.pdfgen import canvas
@@ -142,7 +143,7 @@ class RecipesViewSet(ModelViewSet):
         )
 
 
-class UserViewSet(POSTandGETViewSet):
+class UserViewSet(UserViewSet):
     queryset = User.objects.all()
     pagination_class = Pagination
     serializer_class = FollowSerializer
