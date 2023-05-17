@@ -1,14 +1,12 @@
-from io import BytesIO
-
 from api.paginators import Pagination
 from api.permissions import AdminOnly, CombinedPermission
-from api.serializers import (CustomUserSerializer, FollowSerializer,
-                             IngredientSerializer,
+from api.serializers import (CustomUserSerializer, IngredientSerializer,
                              RecipeCreateUpdateSerializer,
-                             RecipeListSerializer, TagSerializer)
+                             RecipeListSerializer, SubscribtionsSerializer,
+                             TagSerializer)
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
@@ -123,28 +121,22 @@ class RecipesViewSet(ModelViewSet):
         ).annotate(
             ingredient_amount=Sum('amount'))
 
-        buffer = BytesIO()
-        pdf_list = canvas.Canvas(buffer)
-        pdf_list.drawString(200, 750, 'Ваш список покупок')
-        height = 700
-        width = 100
-        for i, item in enumerate(ingredients, 1):
-            get_object_or_404(
-                Recipe,
-                ingredientamount__ingredient__name=item['ingredient__name'])
-            pdf_list.drawString(width, height, (
-                f'{i}. {item["ingredient__name"]} - '
-                f'{item["ingredient_amount"]}, '
-                f'{item["ingredient__measurement_unit"]}. '))
-            height -= 25
-        pdf_list.showPage()
-        pdf_list.save()
-        buffer.seek(0)
-        return FileResponse(
-            buffer,
-            as_attachment=True,
-            filename='to_buy_list.pdf'
-        )
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="список_покупок.pdf"'
+        p = canvas.Canvas(response)
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(100, 800, "Список покупок")
+        p.setFont("Helvetica", 12)
+        y = 750
+        for ingredient in ingredients:
+            name = ingredient['ingredient__name']
+            measurement_unit = ingredient['ingredient__measurement_unit']
+            amount = ingredient['ingredient_amount']
+            p.drawString(100, y, f"{name} ({measurement_unit}): {amount}")
+            y -= 20
+        p.showPage()
+        p.save()
+        return response
 
 
 class UserViewSet(UserViewSet):
@@ -156,20 +148,6 @@ class UserViewSet(UserViewSet):
     def me(self, request, *args, **kwargs):
         self.get_object = self.get_instance
         return self.retrieve(request, *args, **kwargs)
-
-    @action(
-        methods=['GET'],
-        detail=False,
-        permission_classes=(IsAuthenticated,)
-    )
-    def subscriptions(self, request):
-        queryset = Follow.objects.filter(user=self.request.user)
-        if self.request.user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        pages = self.paginate_queryset(queryset)
-        serializer = FollowSerializer(pages, many=True)
-        return self.get_paginated_response(serializer.data)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -192,3 +170,12 @@ class UserViewSet(UserViewSet):
                             status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'Вы не подписаны на этого автора'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubscribtionsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = SubscribtionsSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        return User.objects.filter(followed__user=self.request.user)

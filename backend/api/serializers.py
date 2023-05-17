@@ -207,3 +207,45 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, user):
         return Recipe.objects.filter(author=user).count()
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'cooking_time',
+            'image',
+        )
+
+
+class SubscribtionsSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'last_name',
+            'first_name',
+            'id',
+            'username',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        )
+
+    def get_is_subscribed(self, obj):
+        return True
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()
+
+    def get_recipes(self, obj):
+        queryset = obj.recipe_author.all()
+        return ShortRecipeSerializer(queryset, many=True,
+                                     context=self.context).data

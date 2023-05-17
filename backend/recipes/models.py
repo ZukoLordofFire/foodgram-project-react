@@ -98,8 +98,6 @@ class Recipe(models.Model):
         ),
     )
 
-    # objects = RecipeQuerySet.as_manager()
-
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
