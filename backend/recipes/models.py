@@ -1,7 +1,8 @@
 from typing import Optional
 
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from django.db import models
 from django.db.models import Exists, OuterRef
 
@@ -18,11 +19,13 @@ class Tag(models.Model):
         verbose_name='Цвет',
         max_length=7,
         unique=True,
+        validators=[RegexValidator(regex=r'#[A-Fa-f0-9]{6}')],
     )
     slug = models.CharField(
         verbose_name='Слаг',
         max_length=56,
         unique=True,
+        validators=[RegexValidator(regex=r'#[A-Za-z0-9_-]+')],
     )
 
     class Meta:
