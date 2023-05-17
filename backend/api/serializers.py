@@ -64,6 +64,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'text',
             'is_in_cart',
             'image',
+            'author',
         )
 
     def get_is_favorite(self, obj):
