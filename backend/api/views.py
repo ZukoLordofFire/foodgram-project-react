@@ -122,7 +122,8 @@ class RecipesViewSet(ModelViewSet):
             ingredient_amount=Sum('amount'))
 
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="список_покупок.pdf"'
+        response['Content-Disposition'] = ('attachment; '
+                                           'filename="список_покупок.pdf"')
         p = canvas.Canvas(response)
         p.setFont("Helvetica-Bold", 14)
         p.drawString(100, 800, "Список покупок")
