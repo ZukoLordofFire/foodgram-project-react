@@ -30,7 +30,6 @@ class IngredientsinRecipeSerializer(serializers.ModelSerializer):
         source='ingredient.measurement_unit'
     )
     id = serializers.PrimaryKeyRelatedField(
-        source='ingredient',
         queryset=Ingredient.objects.all()
     )
 
@@ -149,7 +148,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         self.fields.pop('ingredients')
         representation = super().to_representation(obj)
         representation['ingredients'] = IngredientsinRecipeSerializer(
-            IngredientsinRecipeSerializer.objects.filter(recipe=obj).all(),
+            IngredientAmount.objects.filter(recipe=obj).all(),
             many=True
         ).data
         return representation
@@ -160,7 +159,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    is_following = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -169,10 +168,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
                   'username',
                   'first_name',
                   'last_name',
-                  'is_following')
-        read_only_fields = 'is_following',
+                  'is_subscribed')
+        read_only_fields = 'is_subscribed',
 
-    def get_is_following(self, obj):
+    def get_is_subscribed(self, obj):
         user = self.context.get('request')
         return Follow.objects.filter(user=user, author=obj.id).exists()
 
@@ -180,7 +179,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
-    is_following = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -188,7 +187,7 @@ class FollowSerializer(serializers.ModelSerializer):
             'email',
             'id',
             'username',
-            'is_following',
+            'is_subscribed',
             'first_name',
             'last_name',
             'recipes',
@@ -200,7 +199,7 @@ class FollowSerializer(serializers.ModelSerializer):
         queryset = Recipe.objects.filter(author=obj)
         return RecipeListSerializer(queryset, many=True).data
 
-    def get_is_following(*args):
+    def get_is_subscribed(*args):
         return True
 
     def get_recipes_count(self, user):
