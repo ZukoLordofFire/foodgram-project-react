@@ -86,15 +86,14 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 
 class IngredientCreateInRecipeSerializer(serializers.ModelSerializer):
-    recipe = serializers.PrimaryKeyRelatedField(read_only=True)
-    ingredient = serializers.PrimaryKeyRelatedField(
+    id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
-    amount = serializers.IntegerField(write_only=True, min_value=1)
+    amount = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = IngredientAmount
-        fields = ('recipe', 'ingredient', 'amount')
+        fields = ('id', 'amount')
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
@@ -112,7 +111,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         create_ingredients = [
             IngredientAmount(
                 recipe=recipe,
-                ingredient=ingredient['ingredient'],
+                ingredient=ingredient['id'],
                 amount=ingredient['amount']
             )
             for ingredient in ingredients
@@ -130,7 +129,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             create_ingredients = [
                 IngredientAmount(
                     recipe=instance,
-                    ingredient=ingredient['ingredient'],
+                    ingredient=ingredient['id'],
                     amount=ingredient['amount']
                 )
                 for ingredient in ingredients
@@ -143,6 +142,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('name', 'ingredients', 'text')
+
+    def to_representation(self, instance):
+        context = {'request': self.context.get('request')}
+        return RecipeListSerializer(instance, context=context).data
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
