@@ -53,12 +53,12 @@ class RecipeQuerySet(models.QuerySet):
 
     def add_user_annotations(self, user_id: Optional[int]):
         return self.annotate(
-            is_favorite=Exists(
+            is_favorited=Exists(
                 Favourite.objects.filter(
                     user_id=user_id, recipe__pk=OuterRef('pk')
                 )
             ),
-            is_in_cart=Exists(
+            is_in_shopping_cart=Exists(
                 Cart.objects.filter(
                     user_id=user_id, recipe__pk=OuterRef('pk')
                 )

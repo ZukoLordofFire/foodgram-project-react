@@ -43,10 +43,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField(
-        method_name='get_is_favorite',
+        method_name='get_is_favorited',
         read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(
-        method_name='get_is_in_cart',
+        method_name='get_is_in_shopping_cart',
         read_only=True)
     image = Base64ImageField()
 
