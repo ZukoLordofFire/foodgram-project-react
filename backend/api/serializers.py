@@ -66,6 +66,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'image',
             'author',
             'tags',
+            'id',
+            'cooking_time',
         )
 
     def get_is_favorited(self, obj):
@@ -143,9 +145,18 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('name', 'ingredients', 'text')
 
-    def to_representation(self, instance):
-        context = {'request': self.context.get('request')}
-        return RecipeListSerializer(instance, context=context).data
+    def to_representation(self, obj):
+        self.fields.pop('ingredients')
+        representation = super().to_representation(obj)
+        representation['ingredients'] = IngredientsinRecipeSerializer(
+            IngredientsinRecipeSerializer.objects.filter(recipe=obj).all(),
+            many=True
+        ).data
+        return representation
+
+    class Meta:
+        model = Recipe
+        fields = ('name', 'ingredients', 'text')
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
