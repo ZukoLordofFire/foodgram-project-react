@@ -48,6 +48,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         method_name='get_is_in_shopping_cart',
         read_only=True)
     image = Base64ImageField()
+    tags = TagSerializer(many=True)
 
     def get_ingredients(self, obj):
         return IngredientsinRecipeSerializer(
@@ -99,6 +100,15 @@ class IngredientCreateInRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     ingredients = IngredientCreateInRecipeSerializer(many=True)
+    image = Base64ImageField()
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
+
+    class Meta:
+        model = Recipe
+        fields = ('name',
+                  'ingredients', 'text', 'cooking_time', 'image', 'tags')
 
     def validate_ingredients(self, value):
         if len(value) < 1:
@@ -106,7 +116,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, data):
+        print(data)
         ingredients = data.pop('ingredients')
+        tags = data.pop('tags')
         recipe = Recipe.objects.create(**data,
                                        author=self.context['request'].user)
 
@@ -121,6 +133,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.bulk_create(
             create_ingredients
         )
+        recipe.tags.set(tags)
         return recipe
 
     def update(self, instance, validated_data):
@@ -141,22 +154,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             )
         return super().update(instance, validated_data)
 
-    class Meta:
-        model = Recipe
-        fields = ('name', 'ingredients', 'text', 'cooking_time')
-
     def to_representation(self, obj):
-        self.fields.pop('ingredients')
-        representation = super().to_representation(obj)
-        representation['ingredients'] = IngredientsinRecipeSerializer(
-            IngredientAmount.objects.filter(recipe=obj).all(),
-            many=True
-        ).data
-        return representation
-
-    class Meta:
-        model = Recipe
-        fields = ('name', 'ingredients', 'text')
+        return RecipeListSerializer(obj, context=self.context).data
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

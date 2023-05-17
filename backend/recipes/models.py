@@ -1,10 +1,7 @@
-from typing import Optional
-
 from django.contrib.auth import get_user_model
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from django.db import models
-from django.db.models import Exists, OuterRef
 
 User = get_user_model()
 
@@ -50,23 +47,6 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.measurement_unit})'
-
-
-class RecipeQuerySet(models.QuerySet):
-
-    def add_user_annotations(self, user_id: Optional[int]):
-        return self.annotate(
-            is_favorited=Exists(
-                Favourite.objects.filter(
-                    user_id=user_id, recipe__pk=OuterRef('pk')
-                )
-            ),
-            is_in_shopping_cart=Exists(
-                Cart.objects.filter(
-                    user_id=user_id, recipe__pk=OuterRef('pk')
-                )
-            ),
-        )
 
 
 class Recipe(models.Model):
@@ -118,7 +98,7 @@ class Recipe(models.Model):
         ),
     )
 
-    objects = RecipeQuerySet.as_manager()
+    # objects = RecipeQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Рецепт'

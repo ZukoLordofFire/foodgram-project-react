@@ -26,6 +26,7 @@ class TagResource(resources.ModelResource):
             'color',
             'name',
             'slug',
+            'id'
         )
 
 
@@ -78,6 +79,7 @@ class TagAdmin(ImportExportModelAdmin):
         'color',
         'name',
         'slug',
+        'id'
     )
 
 
