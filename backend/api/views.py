@@ -78,7 +78,8 @@ class RecipesViewSet(ModelViewSet):
                             )
         if Favourite.objects.filter(user=self.request.user,
                                     recipe=recipe).exists():
-            Favourite.objects.delete(user=self.request.user, recipe=recipe)
+            Favourite.objects.filter(user=self.request.user,
+                                     recipe=recipe).delete()
         return Response({'message': 'Рецепта нет в избранном.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -96,7 +97,7 @@ class RecipesViewSet(ModelViewSet):
                                 status=status.HTTP_400_BAD_REQUEST)
             Cart.objects.create(user=self.request.user, recipe=recipe)
         if Cart.objects.filter(user=self.request.user, recipe=recipe).exists():
-            Cart.objects.delete(user=self.request.user, recipe=recipe)
+            Cart.objects.filter(user=self.request.user, recipe=recipe).delete()
         return Response({'message': 'Рецепта нет в корзине.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -144,6 +145,11 @@ class UserViewSet(UserViewSet):
     pagination_class = Pagination
     serializer_class = FollowSerializer
 
+    @action(['GET'], detail=False)
+    def me(self, request, *args, **kwargs):
+        self.get_object = self.get_instance
+        return self.retrieve(request, *args, **kwargs)
+
     @action(
         methods=['GET'],
         detail=False,
@@ -164,12 +170,14 @@ class UserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def subscribe(self, request, id):
+        author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
-            if Follow.objects.filter(request.user, author__id=id).exists():
+            if Follow.objects.filter(user=request.user,
+                                     author=author).exists():
                 return Response({'message': 'Вы уже подписаны на автора.'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.create(request.user, author__id=id)
-        if Follow.objects.filter(request.user, author__id=id).exists():
-            Follow.objects.delete(request.user, author__id=id)
+            Follow.objects.create(user=request.user, author=author)
+        if Follow.objects.filter(user=request.user, author=author).exists():
+            Follow.objects.filter(user=request.user, author=author).delete()
         return Response({'message': 'Вы не подписаны на этого автора'},
                         status=status.HTTP_400_BAD_REQUEST)
