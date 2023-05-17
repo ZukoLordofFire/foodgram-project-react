@@ -14,8 +14,8 @@ class User(AbstractUser):
         verbose_name='Активен',
         default=True,
     )
-    LOGIN_FIELD = 'username'
-    REQUIRED_FIELDS = ('email', 'first_name', 'last_name', 'password',)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name', 'password',)
 
 
 class Follow(models.Model):
