@@ -87,7 +87,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 class IngredientCreateInRecipeSerializer(serializers.ModelSerializer):
     recipe = serializers.PrimaryKeyRelatedField(read_only=True)
-    id = serializers.PrimaryKeyRelatedField(
+    ingredient = serializers.PrimaryKeyRelatedField(
         source='ingredient',
         queryset=Ingredient.objects.all()
     )
