@@ -44,7 +44,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipesViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch']
-    permission_classes = (CombinedPermission)
+    permission_classes = (CombinedPermission, )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
