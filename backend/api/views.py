@@ -11,6 +11,8 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
                             Recipe, Tag)
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -121,14 +123,15 @@ class RecipesViewSet(ModelViewSet):
         ).annotate(
             ingredient_amount=Sum('amount'))
 
+        pdfmetrics.registerFont(TTFont('TimesNewRoman', 'times.ttf'))
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
         p = canvas.Canvas(response)
-        p.setFont("Helvetica-Bold", 14)
-        p.drawString(100, 800, "Список покупок")
-        p.setFont("Helvetica", 12)
-        y = 750
+        p.setFont("TimesNewRoman", 16)
+        p.drawString(100, 700, "Список покупок")
+        p.setFont("TimesNewRoman", 12)
+        y = 650
         for ingredient in ingredients:
             name = ingredient['ingredient__name']
             measurement_unit = ingredient['ingredient__measurement_unit']
