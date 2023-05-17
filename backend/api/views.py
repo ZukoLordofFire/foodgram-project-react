@@ -43,7 +43,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 class RecipesViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
-    http_method_names = ['get', 'post', 'patch']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = Pagination
     permission_classes = (CombinedPermission,)
 

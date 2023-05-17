@@ -38,6 +38,24 @@ class IngredientsinRecipeSerializer(serializers.ModelSerializer):
         fields = ('amount', 'name', 'measurement_unit', 'id')
 
 
+class CustomUserSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id',
+                  'email',
+                  'username',
+                  'first_name',
+                  'last_name',
+                  'is_subscribed')
+        read_only_fields = 'is_subscribed',
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request')
+        return Follow.objects.filter(user=user, author=obj.id).exists()
+
+
 class RecipeListSerializer(serializers.ModelSerializer):
 
     ingredients = serializers.SerializerMethodField()
@@ -49,6 +67,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         read_only=True)
     image = Base64ImageField()
     tags = TagSerializer(many=True)
+    author = CustomUserSerializer()
 
     def get_ingredients(self, obj):
         return IngredientsinRecipeSerializer(
@@ -116,7 +135,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, data):
-        print(data)
         ingredients = data.pop('ingredients')
         tags = data.pop('tags')
         recipe = Recipe.objects.create(**data,
@@ -156,24 +174,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         return RecipeListSerializer(obj, context=self.context).data
-
-
-class CustomUserSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ('id',
-                  'email',
-                  'username',
-                  'first_name',
-                  'last_name',
-                  'is_subscribed')
-        read_only_fields = 'is_subscribed',
-
-    def get_is_subscribed(self, obj):
-        user = self.context.get('request')
-        return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
 class FollowSerializer(serializers.ModelSerializer):
