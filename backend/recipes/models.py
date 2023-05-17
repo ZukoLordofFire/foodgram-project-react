@@ -25,7 +25,7 @@ class Tag(models.Model):
         verbose_name='Слаг',
         max_length=56,
         unique=True,
-        validators=[RegexValidator(regex=r'#[A-Za-z0-9_-]+')],
+        validators=[RegexValidator(regex=r'[A-Za-z0-9_-]+')],
     )
 
     class Meta:

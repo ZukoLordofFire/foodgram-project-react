@@ -107,7 +107,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, data):
         ingredients = data.pop('ingredients')
-        recipe = Recipe.objects.create(**data, author=self['request'].user)
+        recipe = Recipe.objects.create(**data,
+                                       author=self.context['request'].user)
 
         create_ingredients = [
             IngredientAmount(
