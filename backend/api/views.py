@@ -2,7 +2,8 @@ from io import BytesIO
 
 from api.paginators import Pagination
 from api.permissions import AdminOnly, CombinedPermission
-from api.serializers import (FollowSerializer, IngredientSerializer,
+from api.serializers import (CustomUserSerializer, FollowSerializer,
+                             IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, TagSerializer)
 from django.contrib.auth import get_user_model
@@ -80,6 +81,8 @@ class RecipesViewSet(ModelViewSet):
                                     recipe=recipe).exists():
             Favourite.objects.filter(user=self.request.user,
                                      recipe=recipe).delete()
+            return Response({'message': 'Рецепт больше не в избранном!'},
+                            status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'Рецепта нет в избранном.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -96,8 +99,12 @@ class RecipesViewSet(ModelViewSet):
                 return Response({'message': 'Рецепт уже добавлен в корзину.'},
                                 status=status.HTTP_400_BAD_REQUEST)
             Cart.objects.create(user=self.request.user, recipe=recipe)
+            return Response({'message': 'Рецепт добавлен в корзину!'},
+                            status=status.HTTP_201_CREATED)
         if Cart.objects.filter(user=self.request.user, recipe=recipe).exists():
             Cart.objects.filter(user=self.request.user, recipe=recipe).delete()
+            return Response({'message': 'Рецепт убран из корзины!'},
+                            status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'Рецепта нет в корзине.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -143,7 +150,7 @@ class RecipesViewSet(ModelViewSet):
 class UserViewSet(UserViewSet):
     queryset = User.objects.all()
     pagination_class = Pagination
-    serializer_class = FollowSerializer
+    serializer_class = CustomUserSerializer
 
     @action(['GET'], detail=False)
     def me(self, request, *args, **kwargs):
@@ -177,7 +184,11 @@ class UserViewSet(UserViewSet):
                 return Response({'message': 'Вы уже подписаны на автора.'},
                                 status=status.HTTP_400_BAD_REQUEST)
             Follow.objects.create(user=request.user, author=author)
+            return Response({'message': 'Подписка усчпешна!'},
+                            status=status.HTTP_201_CREATED)
         if Follow.objects.filter(user=request.user, author=author).exists():
             Follow.objects.filter(user=request.user, author=author).delete()
+            return Response({'message': 'Подписка отменена!'},
+                            status=status.HTTP_204_NO_CONTENT)
         return Response({'message': 'Вы не подписаны на этого автора'},
                         status=status.HTTP_400_BAD_REQUEST)
