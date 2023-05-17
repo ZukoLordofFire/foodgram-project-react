@@ -162,27 +162,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
-class CustomUserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ('id',
-                  'email',
-                  'username',
-                  'first_name',
-                  'last_name',
-                  'password',)
-
-    def create(self, data):
-        password = data.pop('password', None)
-        instance = self.Meta.model(**data)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
-
-
 class FollowSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
