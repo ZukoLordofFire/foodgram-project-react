@@ -140,7 +140,7 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    'USER_CREATE_PASSWORD_RETYPE': True,
+    'USER_CREATE_PASSWORD_RETYPE': False,
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'recipe': ('api.permissions.CombinedPermission,',),
