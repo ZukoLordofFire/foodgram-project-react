@@ -107,7 +107,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, data):
         ingredients = data.pop('ingredients')
-        recipe = Recipe.objects.create(**data)
+        recipe = Recipe.objects.create(**data, author=self.request.user)
 
         create_ingredients = [
             IngredientAmount(
@@ -142,7 +142,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('name', 'ingredients', 'text')
+        fields = ('name', 'ingredients', 'text', 'cooking_time')
 
     def to_representation(self, obj):
         self.fields.pop('ingredients')
