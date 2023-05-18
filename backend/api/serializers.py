@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
-                            Recipe, Tag)
+from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 from rest_framework import serializers
 from users.models import Follow
 
@@ -92,20 +91,18 @@ class RecipeListSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        user = self.context['request'].user
-
-        if user.is_anonymous:
+        request = self.context.get('request')
+        if request.user.is_anonymous:
             return False
-
-        return Favourite.objects.filter(user=user, recipe=obj).exists()
+        return Recipe.objects.filter(
+            in_favourites__user=request.user, id=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        user = self.context['request'].user
-
-        if user.is_anonymous:
+        request = self.context.get('request')
+        if request.user.is_anonymous:
             return False
-
-        return Cart.objects.filter(user=user, recipe=obj).exists()
+        return Recipe.objects.filter(
+            in_carts__user=request.user, id=obj.id).exists()
 
 
 class IngredientCreateInRecipeSerializer(serializers.ModelSerializer):
