@@ -99,10 +99,6 @@ class RecipeResource(resources.ModelResource):
             'cooking_time',
         )
 
-    def get_favourite_count(self, obj):
-        return Favourite.objects.filter(recipe=obj).count()
-    get_favourite_count.short_description = 'Избранное'
-
 
 @admin.register(Recipe)
 class RecipeAdmin(ImportExportModelAdmin):
@@ -113,6 +109,9 @@ class RecipeAdmin(ImportExportModelAdmin):
         'favourite_count',
     )
     list_filter = ('name', 'author', 'tags')
+
+    def get_favourite_count(self, obj):
+        return Favourite.objects.filter(recipe=obj).count()
 
 
 class IngredientResource(resources.ModelResource):
