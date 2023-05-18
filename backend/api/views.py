@@ -9,7 +9,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
                             Recipe, Tag)
@@ -49,7 +48,6 @@ class RecipesViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_class = RecipeFilter
-    filter_backends = (DjangoFilterBackend,)
     pagination_class = Pagination
     permission_classes = (CombinedPermission,)
 
