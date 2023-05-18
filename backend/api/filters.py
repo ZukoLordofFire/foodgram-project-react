@@ -1,11 +1,12 @@
 import django_filters
 from django.contrib.auth import get_user_model
 from recipes.models import Recipe
+from rest_framework.filters import SearchFilter
 
 User = get_user_model
 
 
-class IngredientSearchFilter(django_filters.SearchFilter):
+class IngredientSearchFilter(SearchFilter):
     search_param = 'name'
 
 
