@@ -16,14 +16,10 @@ class AuthorAndTagFilter(django_filters.FilterSet):
         method='filter_is_in_shopping_cart')
 
     def filter_is_favorited(self, queryset, name, value):
-        if value and not self.request.user.is_anonymous:
-            return queryset.filter(in_favourites__user=self.request.user)
-        return queryset
+        return queryset.filter(in_favourites__user=self.request.user)
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if value and not self.request.user.is_anonymous:
-            return queryset.filter(in_carts__user=self.request.user)
-        return queryset
+        return queryset.filter(in_carts__user=self.request.user)
 
     class Meta:
         model = Recipe
