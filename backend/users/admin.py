@@ -106,11 +106,7 @@ class RecipeAdmin(ImportExportModelAdmin):
     list_display = (
         'name',
         'author',
-        'slug',
-        'pub_date',
-        'image',
-        'text',
-        'cooking_time',
+        'favourite_count',
     )
     list_filter = ('name', 'author', 'tags')
 
@@ -134,7 +130,6 @@ class IngredientResource(resources.ModelResource):
 class IngredientsAdmin(ImportExportModelAdmin):
     resource_classes = [IngredientResource]
     list_display = (
-        'id',
         'name',
         'measurement_unit',
     )
