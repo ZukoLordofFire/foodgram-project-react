@@ -122,7 +122,8 @@ class RecipesViewSet(ModelViewSet):
             ingredient_amount=Sum('amount'))
 
         pdfmetrics.registerFont(TTFont(
-            'TimesNewRoman', '{}/times.ttf'.format(settings.STATIC_ROOT)))
+            'TimesNewRoman',
+            '{}/fonts/times.ttf'.format(settings.STATIC_ROOT)))
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
