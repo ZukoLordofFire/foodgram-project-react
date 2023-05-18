@@ -122,15 +122,15 @@ class RecipesViewSet(ModelViewSet):
             ingredient_amount=Sum('amount'))
 
         pdfmetrics.registerFont(TTFont(
-            'TimesNewRoman',
-            '{}/fonts/timesnewromanpsmt.ttf'.format(settings.STATIC_ROOT)))
+            'DejaVu',
+            '{}/DejaVuSans.ttf'.format(settings.STATIC_ROOT)))
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
         p = canvas.Canvas(response)
-        p.setFont("TimesNewRoman", 16)
+        p.setFont("DejaVu", 16)
         p.drawString(100, 700, "Список покупок")
-        p.setFont("TimesNewRoman", 12)
+        p.setFont("DejaVu", 12)
         y = 650
         for ingredient in ingredients:
             name = ingredient['ingredient__name']

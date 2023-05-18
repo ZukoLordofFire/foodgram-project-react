@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-COPY /static/fonts ./static/
-
 RUN pip3 install -r requirements.txt --no-cache-dir
 
 COPY . .
