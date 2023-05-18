@@ -48,7 +48,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipesViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
-    filter_class = RecipeFilter
+    filterset_class = RecipeFilter
     pagination_class = Pagination
     permission_classes = (CombinedPermission,)
     filter_backends = (DjangoFilterBackend, )
@@ -57,15 +57,6 @@ class RecipesViewSet(ModelViewSet):
         if self.action in ('create', 'update', 'partial_update'):
             return RecipeCreateUpdateSerializer
         return RecipeListSerializer
-
-    def get_queryset(self):
-        recipes = Recipe.objects.all()
-
-        author = self.request.query_params.get('author', None)
-        if author:
-            return recipes.filter(author=author)
-
-        return recipes
 
     @action(
         methods=['POST', 'DELETE'],
