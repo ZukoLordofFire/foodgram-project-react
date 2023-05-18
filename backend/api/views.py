@@ -53,6 +53,12 @@ class RecipesViewSet(ModelViewSet):
     permission_classes = (CombinedPermission,)
     filter_backends = (DjangoFilterBackend, )
 
+    def get_queryset(self):
+        queryset = self.queryset
+        filter = RecipeFilter(self.request.GET, queryset=queryset,
+                              request=self.request)
+        return filter.qs
+
     def get_serializer_class(self):
         if self.action in ('create', 'update', 'partial_update'):
             return RecipeCreateUpdateSerializer
