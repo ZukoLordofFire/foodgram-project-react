@@ -1,8 +1,7 @@
 from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
-from recipes.models import (Cart, Favourite, Ingredient, IngredientAmount,
-                            Recipe, Tag)
+from recipes.models import Cart, Ingredient, IngredientAmount, Recipe, Tag
 from users.models import Follow, User
 
 
@@ -110,8 +109,8 @@ class RecipeAdmin(ImportExportModelAdmin):
     )
     list_filter = ('name', 'author', 'tags')
 
-    def get_favourite_count(self, obj):
-        return Favourite.objects.filter(recipe=obj).count()
+    def favourite_count(self, obj):
+        return obj.in_favourites.count()
 
 
 class IngredientResource(resources.ModelResource):
