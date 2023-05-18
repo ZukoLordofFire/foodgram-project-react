@@ -5,6 +5,7 @@ from api.serializers import (CustomUserSerializer, IngredientSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeListSerializer, SubscribtionsSerializer,
                              TagSerializer)
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
@@ -120,7 +121,8 @@ class RecipesViewSet(ModelViewSet):
         ).annotate(
             ingredient_amount=Sum('amount'))
 
-        pdfmetrics.registerFont(TTFont('TimesNewRoman', 'times.ttf'))
+        pdfmetrics.registerFont(TTFont(
+            'TimesNewRoman', '{}/times.ttf'.format(settings.STATIC_ROOT)))
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; '
                                            'filename="список_покупок.pdf"')
