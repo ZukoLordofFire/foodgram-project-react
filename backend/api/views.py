@@ -1,4 +1,4 @@
-from api.filters import AuthorAndTagFilter, IngredientSearchFilter
+from api.filters import IngredientSearchFilter, RecipeFilter
 from api.paginators import Pagination
 from api.permissions import AdminOnly, CombinedPermission
 from api.serializers import (CustomUserSerializer, IngredientSerializer,
@@ -41,15 +41,15 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AdminOnly,)
-    filter_backends = [IngredientSearchFilter]
+    filter_backends = (IngredientSearchFilter,)
     search_fields = ['name']
 
 
 class RecipesViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
-    filter_class = AuthorAndTagFilter
-    filter_backends = [DjangoFilterBackend]
+    filter_class = RecipeFilter
+    filter_backends = (DjangoFilterBackend,)
     pagination_class = Pagination
     permission_classes = (CombinedPermission,)
 

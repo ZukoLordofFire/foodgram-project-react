@@ -10,7 +10,7 @@ class IngredientSearchFilter(SearchFilter):
     search_param = 'name'
 
 
-class AuthorAndTagFilter(django_filters.FilterSet):
+class RecipeFilter(django_filters.FilterSet):
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all())
     is_favorited = django_filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = django_filters.BooleanFilter(
