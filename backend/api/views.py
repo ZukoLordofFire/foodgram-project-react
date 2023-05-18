@@ -58,15 +58,6 @@ class RecipesViewSet(ModelViewSet):
             return RecipeCreateUpdateSerializer
         return RecipeListSerializer
 
-    def get_queryset(self):
-        recipes = Recipe.objects.all()
-
-        author = self.request.query_params.get('author', None)
-        if author:
-            return recipes.filter(author=author)
-
-        return recipes
-
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
