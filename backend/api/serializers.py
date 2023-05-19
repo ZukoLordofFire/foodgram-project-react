@@ -87,14 +87,14 @@ class RecipeListSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         request = self.context.get('request')
         if request.user.is_anonymous:
-            return obj
+            return False
         return Recipe.objects.filter(
             in_favourites__user=request.user, id=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         if request.user.is_anonymous:
-            return obj
+            return False
         return Recipe.objects.filter(
             in_carts__user=request.user, id=obj.id).exists()
 
@@ -190,7 +190,11 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj)
-        return RecipeListSerializer(queryset, many=True).data
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        if limit:
+            queryset = queryset[:int(limit)]
+        return ShortRecipeSerializer(queryset, many=True).data
 
     def get_is_subscribed(*args):
         return True
