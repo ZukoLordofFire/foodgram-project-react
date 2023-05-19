@@ -9,7 +9,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    password = models.CharField(max_length=64)
+    password = models.CharField(max_length=250)
     is_active = models.BooleanField(
         verbose_name='Активен',
         default=True,
