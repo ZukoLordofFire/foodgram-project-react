@@ -240,6 +240,9 @@ class SubscribtionsSerializer(serializers.ModelSerializer):
         return Recipe.objects.filter(author=obj).count()
 
     def get_recipes(self, obj):
-        queryset = obj.recipe_author.all()
-        return ShortRecipeSerializer(queryset, many=True,
-                                     context=self.context).data
+        queryset = Recipe.objects.filter(author=obj)
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        if limit:
+            queryset = queryset[:int(limit)]
+        return ShortRecipeSerializer(queryset, many=True).data

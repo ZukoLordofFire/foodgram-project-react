@@ -9,6 +9,7 @@ class UserResource(resources.ModelResource):
     class Meta:
         model = User
         fields = (
+            'id',
             'username',
             'email',
             'first_name',
@@ -87,6 +88,7 @@ class RecipeResource(resources.ModelResource):
     class Meta:
         model = Recipe
         fields = (
+            'id',
             'name',
             'author',
             'tags',
