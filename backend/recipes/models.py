@@ -154,7 +154,17 @@ class Cart(models.Model):
 
 class IngredientAmount(models.Model):
     amount = models.PositiveIntegerField(
-        verbose_name='Количество'
+        verbose_name='Количество',
+        validators=(
+            MinValueValidator(
+                0,
+                'Вы не можете положить 0 чего бы то ни было',
+            ),
+            MaxValueValidator(
+                2147483646,
+                'Слишком много...',
+            ),
+        ),
     )
     ingredient = models.ForeignKey(
         Ingredient,
