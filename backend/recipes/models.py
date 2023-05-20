@@ -158,8 +158,8 @@ class IngredientAmount(models.Model):
         validators=(
             MinValueValidator(
                 0,
-                'Вы не можете положить 0 чего бы то ни было'
-            )
+                'Вы не можете положить 0 чего бы то ни было',
+            ),
         ),
     )
     ingredient = models.ForeignKey(
