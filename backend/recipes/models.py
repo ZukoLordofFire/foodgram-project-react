@@ -159,11 +159,7 @@ class IngredientAmount(models.Model):
             MinValueValidator(
                 0,
                 'Вы не можете положить 0 чего бы то ни было',
-            ),
-            MaxValueValidator(
-                2147483646,
-                'Слишком много...',
-            ),
+            )
         ),
     )
     ingredient = models.ForeignKey(
